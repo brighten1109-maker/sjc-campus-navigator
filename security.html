@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="SJC Campus Navigator security module — password protection and secure credential demonstration.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="app.css">
+<title>SJC — Security Module</title>
+</head>
+<body>
+<div class="top-strip"><div class="strip-track"><span>SJC CAMPUS NAVIGATOR</span><i>✦</i><span>SECURITY LAB</span><i>✦</i><span>SECURE CREDENTIALS</span><i>✦</i><span>PBKDF2 · SHA-256</span><i>✦</i><span>ACADEMIC DEMONSTRATION</span><i>✦</i></div></div>
+<header class="site-header">
+<a href="index.html" class="brand"><div class="brand-mark"><span>SJ</span><small>1844</small></div><div class="brand-copy"><strong>St. Joseph's</strong><span>Campus Navigator</span></div></a>
+<nav class="main-nav">
+<a href="index.html" data-page="index.html">01 <span>Home</span></a>
+<a href="navigator.html" data-page="navigator.html">02 <span>Navigator</span></a>
+<a href="places.html" data-page="places.html">03 <span>Places</span></a>
+<a href="departments.html" data-page="departments.html">04 <span>Departments</span></a>
+<a href="about.html" data-page="about.html">05 <span>About</span></a>
+<a href="security.html" data-page="security.html">06 <span>Security</span></a>
+</nav>
+<div class="header-actions"><div class="live-status"><span></span>SECURITY LAB</div><button data-theme class="icon-button" aria-label="Toggle theme">◐</button><button class="icon-button mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button></div>
+</header>
+
+<main class="page-shell security-page">
+<section class="page-hero"><div class="page-hero-grid"><div>
+<span class="page-kicker">06 / MODULE 3 · BACKEND ENGINEERING & SECURITY</span>
+<h1>Protect the <em>access.</em></h1>
+<p>This module adds a working password-security demonstration to the SJC Campus Navigator. Passwords are never stored directly; a random salt and a slow PBKDF2 key-derivation process are used to create a verification hash.</p>
+<div class="breadcrumbs"><a href="index.html">Home</a><b>→</b><span>Security</span></div>
+</div><div class="page-hero-art"><span class="art-label">SECURITY / PBKDF2 / SHA-256</span><div class="art-pin">🔐</div></div></div></section>
+
+<section class="security-grid">
+<article class="security-card security-card-main">
+<div class="security-card-head"><div><span class="section-label">01 / CREDENTIAL SETUP</span><h2>Create an <em>admin credential.</em></h2></div><span class="security-badge" id="credentialStatus">NOT SET</span></div>
+<p class="security-intro">Create a local administrator credential for this academic prototype. The password is processed in the browser with the Web Crypto API and only the derived hash and salt are retained.</p>
+<form id="setupForm" class="security-form" autocomplete="off">
+<label>ADMIN USERNAME<input id="setupUsername" type="text" minlength="3" maxlength="40" placeholder="e.g. sjcadmin" required></label>
+<label>PASSWORD<div class="password-wrap"><input id="setupPassword" type="password" minlength="12" maxlength="128" placeholder="Minimum 12 characters" required><button type="button" class="password-toggle" data-toggle-password="setupPassword">Show</button></div></label>
+<div class="strength-track"><span id="strengthBar"></span></div><div class="strength-meta"><span>Password strength</span><strong id="strengthText">Not entered</strong></div>
+<label>CONFIRM PASSWORD<input id="setupConfirm" type="password" minlength="12" maxlength="128" placeholder="Re-enter password" required></label>
+<label class="check-row"><input id="setupConfirmPolicy" type="checkbox" required><span>I understand this is a client-side academic prototype and not a production authentication server.</span></label>
+<button class="btn btn-primary security-submit" type="submit">Generate Secure Credential <b>→</b></button>
+</form>
+<div class="security-message" id="setupMessage" role="status" aria-live="polite"></div>
+</article>
+
+<article class="security-card">
+<div class="security-card-head"><div><span class="section-label">02 / VERIFICATION</span><h2>Test secure <em>login.</em></h2></div></div>
+<form id="loginForm" class="security-form" autocomplete="off">
+<label>USERNAME<input id="loginUsername" type="text" placeholder="Admin username" required></label>
+<label>PASSWORD<div class="password-wrap"><input id="loginPassword" type="password" placeholder="Admin password" required><button type="button" class="password-toggle" data-toggle-password="loginPassword">Show</button></div></label>
+<button class="btn btn-outline security-submit" type="submit">Verify Credential</button>
+</form>
+<div class="login-result" id="loginResult"><span class="result-dot"></span><span id="loginResultText">No verification performed yet.</span></div>
+<button id="logoutButton" class="chip security-logout" type="button">Clear Demo Session</button>
+</article>
+</section>
+
+<section class="security-explainer">
+<div class="section-heading-row"><div><span class="section-label">03 / ALGORITHM</span><h2>How the <em>protection works.</em></h2></div><p>The implementation demonstrates the same core principles expected in a real authentication system: random salts, a password-specific key-derivation function, constant-time comparison and no plain-text password storage.</p></div>
+<div class="security-flow">
+<div><span>01</span><strong>Validate</strong><p>Check length and strength before accepting the credential.</p></div>
+<div><span>02</span><strong>Salt</strong><p>Generate a fresh 16-byte random salt for the credential.</p></div>
+<div><span>03</span><strong>Derive</strong><p>Use PBKDF2 with SHA-256 and 310,000 iterations.</p></div>
+<div><span>04</span><strong>Store</strong><p>Store only username, salt, iterations and derived hash locally.</p></div>
+<div><span>05</span><strong>Verify</strong><p>Derive a new hash and compare it byte-by-byte without exposing the password.</p></div>
+</div>
+</section>
+
+<section class="security-spec-grid">
+<article class="security-card"><span class="section-label">04 / SECURITY SPECIFICATION</span><h3>Implemented controls</h3><ul class="security-list"><li>Minimum 12-character password policy</li><li>Uppercase, lowercase, number and special-character checks</li><li>Random 128-bit salt using <code>crypto.getRandomValues()</code></li><li>PBKDF2 password derivation using SHA-256</li><li>310,000 derivation iterations</li><li>256-bit derived key</li><li>No plain-text password stored</li><li>Session flag cleared by the logout action</li></ul></article>
+<article class="security-card"><span class="section-label">05 / PRODUCTION NOTE</span><h3>What would change in production?</h3><p class="security-intro">This page is intentionally a front-end security demonstration for Module 3. A production SJC administration system should move credential storage and authentication to a trusted backend, use HTTPS, server-side sessions or secure tokens, rate limiting, audit logging and a database. The client must never be treated as the security boundary.</p><div class="warning-box"><strong>Important:</strong> localStorage is used only so the Moodle demonstration can run on GitHub Pages without a backend. Do not use this client-only credential store for real institutional accounts.</div></article>
+</section>
+</main>
+
+<footer class="app-footer"><div class="app-footer-inner"><div><h3>SJC Campus Navigator</h3><p>A responsive digital campus experience for exploring destinations, departments and walking routes across St. Joseph's College.</p></div><div><h3>Explore</h3><div class="app-footer-links"><a href="navigator.html">Interactive Navigator</a><a href="places.html">Campus Places</a><a href="departments.html">Academic Directory</a></div></div><div><h3>Project</h3><div class="app-footer-links"><a href="about.html">About the System</a><a href="security.html">Security Module</a><a href="index.html">Home</a></div></div></div><div class="app-footer-bottom"><span>© <span data-year>2026</span> SJC Campus Navigator</span><span>MODULE 3 · PASSWORD SECURITY · WEB CRYPTO</span></div></footer>
+<script src="app.js"></script><script src="security.js"></script>
+</body></html>

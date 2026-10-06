@@ -1,0 +1,6 @@
+document.addEventListener('DOMContentLoaded',()=>{
+ const grid=document.getElementById('departmentGridPage'),search=document.getElementById('departmentSearchPage'),filter=document.getElementById('departmentFilter'),depts=window.SJC.departments;
+ [...new Set(depts.map(d=>d[2]))].sort().forEach(g=>filter.insertAdjacentHTML('beforeend','<option value="'+g+'">'+g+'</option>'));
+ function render(){const q=search.value.trim().toLowerCase(),f=filter.value,rows=depts.filter(d=>(!q||(d[0]+' '+d[1]+' '+d[2]).toLowerCase().includes(q))&&(!f||d[2]===f));grid.innerHTML=rows.length?rows.map(d=>'<article class="directory-card"><div class="card-top"><span class="card-number">'+d[0]+'</span><div class="card-icon">'+d[1].slice(0,2).toUpperCase()+'</div></div><span class="card-category">'+d[2]+'</span><h3>'+d[1]+'</h3><p>Academic department within the SJC directory.</p><div class="card-actions"><a class="primary" href="navigator.html">Open navigator →</a></div></article>').join(''):'<div class="no-results">No department matched your search.</div>';}
+ search.addEventListener('input',render);filter.addEventListener('change',render);render();
+});

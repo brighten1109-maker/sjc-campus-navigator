@@ -1,0 +1,954 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="description" content="SJC Campus Navigator — an interactive digital campus experience for St. Joseph's College, Tiruchirappalli."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="app.css"><title>SJC — Interactive Navigator</title></head><body><div class="top-strip"><div class="strip-track"><span>SJC CAMPUS NAVIGATOR</span><i>✦</i><span>TRICHY · TAMIL NADU</span><i>✦</i><span>EXPLORE · NAVIGATE · DISCOVER</span><i>✦</i><span>ST. JOSEPH'S COLLEGE</span><i>✦</i><span>SMART CAMPUS EXPERIENCE</span><i>✦</i><span>SJC CAMPUS NAVIGATOR</span><i>✦</i></div></div>
+<header class="site-header"><a href="index.html" class="brand"><div class="brand-mark"><span>SJ</span><small>1844</small></div><div class="brand-copy"><strong>St. Joseph's</strong><span>Campus Navigator</span></div></a>
+<nav class="main-nav"><a href="index.html" data-page="index.html" class="">01 <span>Home</span></a><a href="navigator.html" data-page="navigator.html" class="active">02 <span>Navigator</span></a><a href="places.html" data-page="places.html" class="">03 <span>Places</span></a><a href="departments.html" data-page="departments.html" class="">04 <span>Departments</span></a><a href="about.html" data-page="about.html" class="">05 <span>About</span></a></nav><div class="header-actions"><div class="live-status"><span></span>LIVE CAMPUS</div><button data-theme class="icon-button" aria-label="Toggle theme">◐</button><button class="icon-button mobile-toggle" aria-label="Open menu" aria-expanded="false">☰</button></div></header>
+<main class="navigator-page"><div class="page-shell"><section class="page-hero" style="padding-bottom:15px"><div class="page-hero-grid"><div><span class="page-kicker">02 / INTERACTIVE NAVIGATION</span><h1>Move through <em>the campus.</em></h1><p>Plan a walking route between campus locations. The route engine uses the existing campus graph and renders the result directly on the map.</p><div class="breadcrumbs"><a href="index.html">Home</a><b>→</b><span>Navigator</span></div></div><div class="page-hero-art"><span class="art-label">ROUTE ENGINE / LIVE</span><div class="art-pin">→</div></div></div></section></div>
+<section class="navigator-section" id="navigator"><div class="section-heading-row"><div><span class="section-label">ROUTE PLANNER</span><h2>Choose a start.<br><em>Find your destination.</em></h2></div><p>Drag the map, zoom in or out, inspect markers and calculate a route with walking distance and estimated time.</p></div>
+<div class="navigator-shell"><aside class="route-panel"><div class="panel-top"><div><span>ROUTE PLANNER</span><h3>Where to?</h3></div><div class="route-number">02</div></div><div class="route-form"><div class="location-field"><label>STARTING POINT</label><div class="select-box"><i class="start-pin"></i><select id="startLocation"></select></div></div><button class="swap-button" id="swapButton" title="Swap locations">⇅</button><div class="location-field"><label>DESTINATION</label><div class="select-box destination-box"><i class="destination-pin"></i><select id="destinationLocation"></select></div></div><button class="route-button" id="routeButton"><span>Calculate route</span><b>→</b></button></div>
+<div class="quick-destinations"><button data-quick="library">Library</button><button data-quick="canteen">Canteen</button><button data-quick="computer">Computer Science</button><button data-quick="church">Church</button></div>
+<div class="route-result" id="routeResult"><div class="result-heading"><span>ROUTE STATUS</span><strong id="routeStatus">READY</strong></div><div class="result-metrics"><div><strong id="distanceValue">—</strong><span>DISTANCE</span></div><div><strong id="timeValue">—</strong><span>WALKING TIME</span></div></div><p id="routeMessage">Choose a destination to generate your campus route.</p></div>
+<button class="reset-button" id="resetMapButton">Reset navigation</button><button class="copy-route" id="copyRoute">Copy route summary</button><div class="route-tip"><span>TIP</span> Click any map marker to inspect the location and navigate there.</div></aside>
+<div class="map-panel"><div class="map-header"><div class="map-live"><span></span>CAMPUS MAP / LIVE</div><div class="map-header-right"><span>DRAG TO EXPLORE</span><div class="map-controls"><button id="zoomIn">+</button><button id="zoomOut">−</button><button id="resetZoom">↺</button></div></div></div><div class="map-wrapper" id="mapWrapper"><svg
+                    id="campusMap"
+                    viewBox="0 0 1400 820"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+
+                    <defs>
+
+                        <linearGradient
+                            id="mapGradient"
+                            x1="0"
+                            y1="0"
+                            x2="1"
+                            y2="1"
+                        >
+
+                            <stop
+                                offset="0%"
+                                stop-color="#eef3f8"
+                            />
+
+                            <stop
+                                offset="100%"
+                                stop-color="#dfe7ef"
+                            />
+
+                        </linearGradient>
+
+
+                        <linearGradient
+                            id="buildingGradient"
+                            x1="0"
+                            y1="0"
+                            x2="1"
+                            y2="1"
+                        >
+
+                            <stop
+                                offset="0%"
+                                stop-color="#ffffff"
+                            />
+
+                            <stop
+                                offset="100%"
+                                stop-color="#edf2f7"
+                            />
+
+                        </linearGradient>
+
+
+                        <filter
+                            id="mapShadow"
+                            x="-30%"
+                            y="-30%"
+                            width="160%"
+                            height="160%"
+                        >
+
+                            <feDropShadow
+                                dx="0"
+                                dy="8"
+                                stdDeviation="8"
+                                flood-opacity=".12"
+                            />
+
+                        </filter>
+
+                    </defs>
+
+
+                    <!-- MAP BASE -->
+
+                    <rect
+                        width="1400"
+                        height="820"
+                        fill="url(#mapGradient)"
+                    />
+
+
+                    <!-- MAP GRID -->
+
+                    <g
+                        class="map-grid"
+                        opacity=".45"
+                    >
+
+                        <path d="M0 100 H1400"/>
+                        <path d="M0 200 H1400"/>
+                        <path d="M0 300 H1400"/>
+                        <path d="M0 400 H1400"/>
+                        <path d="M0 500 H1400"/>
+                        <path d="M0 600 H1400"/>
+                        <path d="M0 700 H1400"/>
+
+                        <path d="M100 0 V820"/>
+                        <path d="M200 0 V820"/>
+                        <path d="M300 0 V820"/>
+                        <path d="M400 0 V820"/>
+                        <path d="M500 0 V820"/>
+                        <path d="M600 0 V820"/>
+                        <path d="M700 0 V820"/>
+                        <path d="M800 0 V820"/>
+                        <path d="M900 0 V820"/>
+                        <path d="M1000 0 V820"/>
+                        <path d="M1100 0 V820"/>
+                        <path d="M1200 0 V820"/>
+                        <path d="M1300 0 V820"/>
+
+                    </g>
+
+
+                    <!-- GREEN ZONES -->
+
+                    <path
+                        class="green-zone"
+                        d="M40 80 Q220 20 390 85 Q450 150 390 215 Q210 240 55 185Z"
+                    />
+
+                    <path
+                        class="green-zone"
+                        d="M1000 50 Q1230 20 1360 160 Q1320 250 1170 220 Q1030 180 1000 50Z"
+                    />
+
+                    <path
+                        class="green-zone"
+                        d="M900 590 Q1110 500 1330 590 Q1370 700 1210 760 Q1000 770 900 690Z"
+                    />
+
+                    <path
+                        class="green-zone"
+                        d="M50 620 Q220 560 370 640 Q350 760 170 770 Q50 720 50 620Z"
+                    />
+
+
+                    <!-- ROADS -->
+
+                    <g class="roads">
+
+                        <path d="M80 410 C250 410 350 365 520 395 C700 430 820 380 1020 410 C1160 430 1250 405 1340 415"/>
+
+                        <path d="M520 395 C545 290 585 215 650 130"/>
+
+                        <path d="M700 430 C730 330 790 270 870 210"/>
+
+                        <path d="M700 430 C690 530 630 625 570 700"/>
+
+                        <path d="M870 210 C950 300 980 430 1060 630"/>
+
+                        <path d="M520 395 C440 475 390 555 300 660"/>
+
+                        <path d="M570 700 C750 730 900 715 1060 630"/>
+
+                    </g>
+
+
+                    <!-- ROAD LABELS -->
+
+                    <text class="road-label" x="680" y="385">
+                        CENTRAL CAMPUS ROAD
+                    </text>
+
+
+                    <!-- GATES -->
+
+                    <g
+                        class="map-location"
+                        data-location="gate1"
+                    >
+
+                        <rect
+                            x="45"
+                            y="365"
+                            width="95"
+                            height="80"
+                            rx="16"
+                        />
+
+                        <text
+                            x="92"
+                            y="397"
+                            class="building-title"
+                        >
+                            GATE 01
+                        </text>
+
+                        <text
+                            x="92"
+                            y="420"
+                            class="building-subtitle"
+                        >
+                            MAIN
+                        </text>
+
+                    </g>
+
+
+                    <g
+                        class="map-location"
+                        data-location="gate2"
+                    >
+
+                        <rect
+                            x="1260"
+                            y="365"
+                            width="95"
+                            height="80"
+                            rx="16"
+                        />
+
+                        <text
+                            x="1307"
+                            y="397"
+                            class="building-title"
+                        >
+                            GATE 02
+                        </text>
+
+                        <text
+                            x="1307"
+                            y="420"
+                            class="building-subtitle"
+                        >
+                            EAST
+                        </text>
+
+                    </g>
+
+
+                    <g
+                        class="map-location"
+                        data-location="gate3"
+                    >
+
+                        <rect
+                            x="630"
+                            y="55"
+                            width="100"
+                            height="70"
+                            rx="16"
+                        />
+
+                        <text
+                            x="680"
+                            y="84"
+                            class="building-title"
+                        >
+                            GATE 03
+                        </text>
+
+                        <text
+                            x="680"
+                            y="106"
+                            class="building-subtitle"
+                        >
+                            NORTH
+                        </text>
+
+                    </g>
+
+
+                    <g
+                        class="map-location"
+                        data-location="gate4"
+                    >
+
+                        <rect
+                            x="515"
+                            y="700"
+                            width="100"
+                            height="70"
+                            rx="16"
+                        />
+
+                        <text
+                            x="565"
+                            y="729"
+                            class="building-title"
+                        >
+                            GATE 04
+                        </text>
+
+                        <text
+                            x="565"
+                            y="751"
+                            class="building-subtitle"
+                        >
+                            SOUTH
+                        </text>
+
+                    </g>
+
+
+                    <g
+                        class="map-location"
+                        data-location="gate5"
+                    >
+
+                        <rect
+                            x="1260"
+                            y="680"
+                            width="100"
+                            height="70"
+                            rx="16"
+                        />
+
+                        <text
+                            x="1310"
+                            y="709"
+                            class="building-title"
+                        >
+                            GATE 05
+                        </text>
+
+                        <text
+                            x="1310"
+                            y="731"
+                            class="building-subtitle"
+                        >
+                            SERVICE
+                        </text>
+
+                    </g>
+
+
+                    <!-- CENTRAL HERITAGE -->
+
+                    <g
+                        class="map-location heritage-location"
+                        data-location="church"
+                    >
+
+                        <rect
+                            x="560"
+                            y="150"
+                            width="180"
+                            height="100"
+                            rx="20"
+                        />
+
+                        <text
+                            x="650"
+                            y="190"
+                            class="building-title"
+                        >
+                            SJC CHURCH
+                        </text>
+
+                        <text
+                            x="650"
+                            y="216"
+                            class="building-subtitle"
+                        >
+                            HERITAGE
+                        </text>
+
+                    </g>
+
+
+                    <!-- LIBRARY -->
+
+                    <g
+                        class="map-location"
+                        data-location="library"
+                    >
+
+                        <rect
+                            x="300"
+                            y="285"
+                            width="180"
+                            height="95"
+                            rx="20"
+                        />
+
+                        <text
+                            x="390"
+                            y="323"
+                            class="building-title"
+                        >
+                            ARRUPE
+                        </text>
+
+                        <text
+                            x="390"
+                            y="348"
+                            class="building-title"
+                        >
+                            LIBRARY
+                        </text>
+
+                    </g>
+
+
+                    <!-- MCA -->
+
+                    <g
+                        class="map-location accent-location"
+                        data-location="mca"
+                    >
+
+                        <rect
+                            x="465"
+                            y="270"
+                            width="180"
+                            height="100"
+                            rx="20"
+                        />
+
+                        <text
+                            x="555"
+                            y="307"
+                            class="building-title"
+                        >
+                            MCA BLOCK
+                        </text>
+
+                        <text
+                            x="555"
+                            y="333"
+                            class="building-subtitle"
+                        >
+                            COMPUTING
+                        </text>
+
+                    </g>
+
+
+                    <!-- JIM -->
+
+                    <g
+                        class="map-location"
+                        data-location="jim"
+                    >
+
+                        <rect
+                            x="815"
+                            y="270"
+                            width="170"
+                            height="100"
+                            rx="20"
+                        />
+
+                        <text
+                            x="900"
+                            y="308"
+                            class="building-title"
+                        >
+                            JIM
+                        </text>
+
+                        <text
+                            x="900"
+                            y="334"
+                            class="building-subtitle"
+                        >
+                            MANAGEMENT
+                        </text>
+
+                    </g>
+
+
+                    <!-- COMPUTER SCIENCE -->
+
+                    <g
+                        class="map-location"
+                        data-location="computer"
+                    >
+
+                        <rect
+                            x="705"
+                            y="420"
+                            width="180"
+                            height="95"
+                            rx="20"
+                        />
+
+                        <text
+                            x="795"
+                            y="458"
+                            class="building-title"
+                        >
+                            COMPUTER
+                        </text>
+
+                        <text
+                            x="795"
+                            y="483"
+                            class="building-subtitle"
+                        >
+                            SCIENCE
+                        </text>
+
+                    </g>
+
+
+                    <!-- PHYSICS -->
+
+                    <g
+                        class="map-location"
+                        data-location="physics"
+                    >
+
+                        <rect
+                            x="470"
+                            y="430"
+                            width="170"
+                            height="90"
+                            rx="20"
+                        />
+
+                        <text
+                            x="555"
+                            y="467"
+                            class="building-title"
+                        >
+                            PHYSICS
+                        </text>
+
+                        <text
+                            x="555"
+                            y="491"
+                            class="building-subtitle"
+                        >
+                            SCIENCE
+                        </text>
+
+                    </g>
+
+
+                    <!-- CHEMISTRY -->
+
+                    <g
+                        class="map-location"
+                        data-location="chemistry"
+                    >
+
+                        <rect
+                            x="915"
+                            y="420"
+                            width="180"
+                            height="90"
+                            rx="20"
+                        />
+
+                        <text
+                            x="1005"
+                            y="457"
+                            class="building-title"
+                        >
+                            CHEMISTRY
+                        </text>
+
+                        <text
+                            x="1005"
+                            y="482"
+                            class="building-subtitle"
+                        >
+                            LABS
+                        </text>
+
+                    </g>
+
+
+                    <!-- BIOLOGICAL SCIENCES -->
+
+                    <g
+                        class="map-location"
+                        data-location="biology"
+                    >
+
+                        <rect
+                            x="270"
+                            y="510"
+                            width="200"
+                            height="100"
+                            rx="20"
+                        />
+
+                        <text
+                            x="370"
+                            y="548"
+                            class="building-title"
+                        >
+                            BIOLOGICAL
+                        </text>
+
+                        <text
+                            x="370"
+                            y="574"
+                            class="building-subtitle"
+                        >
+                            SCIENCES
+                        </text>
+
+                    </g>
+
+
+                    <!-- HUMANITIES -->
+
+                    <g
+                        class="map-location"
+                        data-location="humanities"
+                    >
+
+                        <rect
+                            x="650"
+                            y="555"
+                            width="190"
+                            height="100"
+                            rx="20"
+                        />
+
+                        <text
+                            x="745"
+                            y="593"
+                            class="building-title"
+                        >
+                            HUMANITIES
+                        </text>
+
+                        <text
+                            x="745"
+                            y="619"
+                            class="building-subtitle"
+                        >
+                            LANGUAGES
+                        </text>
+
+                    </g>
+
+
+                    <!-- ADMIN -->
+
+                    <g
+                        class="map-location"
+                        data-location="admin"
+                    >
+
+                        <rect
+                            x="870"
+                            y="115"
+                            width="170"
+                            height="90"
+                            rx="20"
+                        />
+
+                        <text
+                            x="955"
+                            y="152"
+                            class="building-title"
+                        >
+                            ADMIN
+                        </text>
+
+                        <text
+                            x="955"
+                            y="177"
+                            class="building-subtitle"
+                        >
+                            OFFICE
+                        </text>
+
+                    </g>
+
+
+                    <!-- NUTRI CORNER -->
+
+                    <g
+                        class="map-location facility-location"
+                        data-location="nutri"
+                    >
+
+                        <rect
+                            x="1040"
+                            y="525"
+                            width="165"
+                            height="85"
+                            rx="20"
+                        />
+
+                        <text
+                            x="1122"
+                            y="560"
+                            class="building-title"
+                        >
+                            NUTRI
+                        </text>
+
+                        <text
+                            x="1122"
+                            y="585"
+                            class="building-subtitle"
+                        >
+                            CORNER
+                        </text>
+
+                    </g>
+
+
+                    <!-- CANTEEN -->
+
+                    <g
+                        class="map-location facility-location"
+                        data-location="canteen"
+                    >
+
+                        <rect
+                            x="1020"
+                            y="270"
+                            width="160"
+                            height="85"
+                            rx="20"
+                        />
+
+                        <text
+                            x="1100"
+                            y="305"
+                            class="building-title"
+                        >
+                            CANTEEN
+                        </text>
+
+                        <text
+                            x="1100"
+                            y="330"
+                            class="building-subtitle"
+                        >
+                            FOOD COURT
+                        </text>
+
+                    </g>
+
+
+                    <!-- PARKING -->
+
+                    <g
+                        class="map-location facility-location"
+                        data-location="parking"
+                    >
+
+                        <rect
+                            x="1100"
+                            y="650"
+                            width="150"
+                            height="80"
+                            rx="20"
+                        />
+
+                        <text
+                            x="1175"
+                            y="682"
+                            class="building-title"
+                        >
+                            PARKING
+                        </text>
+
+                        <text
+                            x="1175"
+                            y="706"
+                            class="building-subtitle"
+                        >
+                            VEHICLES
+                        </text>
+
+                    </g>
+
+
+                    <!-- HERITAGE MUSEUM -->
+
+                    <g
+                        class="map-location heritage-location"
+                        data-location="museum"
+                    >
+
+                        <rect
+                            x="90"
+                            y="215"
+                            width="165"
+                            height="90"
+                            rx="20"
+                        />
+
+                        <text
+                            x="172"
+                            y="252"
+                            class="building-title"
+                        >
+                            MUSEUM
+                        </text>
+
+                        <text
+                            x="172"
+                            y="277"
+                            class="building-subtitle"
+                        >
+                            HERITAGE
+                        </text>
+
+                    </g>
+
+
+                    <!-- HERBARIUM -->
+
+                    <g
+                        class="map-location facility-location"
+                        data-location="herbarium"
+                    >
+
+                        <rect
+                            x="85"
+                            y="535"
+                            width="170"
+                            height="90"
+                            rx="20"
+                        />
+
+                        <text
+                            x="170"
+                            y="572"
+                            class="building-title"
+                        >
+                            RAPINAT
+                        </text>
+
+                        <text
+                            x="170"
+                            y="597"
+                            class="building-subtitle"
+                        >
+                            HERBARIUM
+                        </text>
+
+                    </g>
+
+
+                    <!-- SPORTS -->
+
+                    <g
+                        class="map-location facility-location"
+                        data-location="sports"
+                    >
+
+                        <rect
+                            x="1090"
+                            y="110"
+                            width="175"
+                            height="95"
+                            rx="20"
+                        />
+
+                        <text
+                            x="1177"
+                            y="148"
+                            class="building-title"
+                        >
+                            SPORTS
+                        </text>
+
+                        <text
+                            x="1177"
+                            y="174"
+                            class="building-subtitle"
+                        >
+                            GROUND
+                        </text>
+
+                    </g>
+
+
+                    <!-- SHEPHERD -->
+
+                    <g
+                        class="map-location facility-location"
+                        data-location="shepherd"
+                    >
+
+                        <rect
+                            x="390"
+                            y="655"
+                            width="175"
+                            height="85"
+                            rx="20"
+                        />
+
+                        <text
+                            x="477"
+                            y="689"
+                            class="building-title"
+                        >
+                            SHEPHERD
+                        </text>
+
+                        <text
+                            x="477"
+                            y="714"
+                            class="building-subtitle"
+                        >
+                            CENTRE
+                        </text>
+
+                    </g>
+
+
+                    <!-- ROUTE LAYER -->
+
+                    <g id="routeLayer"></g>
+
+
+                    <!-- MARKER LAYER -->
+
+                    <g id="markerLayer"></g>
+
+
+                    <!-- MAP COMPASS -->
+
+                    <g class="map-compass">
+
+                        <circle
+                            cx="1330"
+                            cy="65"
+                            r="35"
+                        />
+
+                        <text
+                            x="1330"
+                            y="52"
+                        >
+                            N
+                        </text>
+
+                        <path
+                            d="M1330 58 L1322 78 L1330 73 L1338 78Z"
+                        />
+
+                    </g>
+
+                </svg></div></div></div></section>
+<div id="placeGrid" style="display:none"></div><div id="departmentGrid" style="display:none"></div><input id="departmentSearch" style="display:none"><button id="themeButton" style="display:none"></button>
+</main><div class="modal" id="locationModal"><div class="modal-overlay"></div><div class="modal-card"><button class="modal-close" id="modalClose">×</button><span class="modal-category" id="modalCategory">LOCATION</span><div class="modal-symbol" id="modalIcon">◎</div><h2 id="modalTitle">Location</h2><p id="modalDescription">Campus location.</p><button id="modalRouteButton" class="modal-route-button">Navigate Here <span>→</span></button></div></div>
+<div class="toast" id="toast"><span id="toastMessage"></span></div><footer class="app-footer"><div class="app-footer-inner"><div><h3>SJC Campus Navigator</h3><p>A responsive digital campus experience for exploring destinations, departments and walking routes across St. Joseph's College.</p></div><div><h3>Explore</h3><div class="app-footer-links"><a href="navigator.html">Interactive Navigator</a><a href="places.html">Campus Places</a><a href="departments.html">Academic Directory</a></div></div><div><h3>Project</h3><div class="app-footer-links"><a href="about.html">About the System</a><a href="navigator.html?to=library">Quick Route</a><a href="index.html">Home</a></div></div></div><div class="app-footer-bottom"><span>© <span data-year>2026</span> SJC Campus Navigator</span><span>HTML · CSS · JAVASCRIPT · RESPONSIVE WEB</span></div></footer><script src="app.js"></script><script src="navigator.js"></script><script>
+document.addEventListener('DOMContentLoaded',()=>{
+ document.querySelectorAll('[data-quick]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('destinationLocation').value=b.dataset.quick;document.getElementById('routeButton').click();}));
+ const q=new URLSearchParams(location.search).get('to'); if(q&&document.getElementById('destinationLocation')) setTimeout(()=>{document.getElementById('destinationLocation').value=q;document.getElementById('routeButton').click()},250);
+ const copy=document.getElementById('copyRoute'); if(copy) copy.addEventListener('click',()=>{const s=document.getElementById('routeStatus')?.textContent||'READY';const m=document.getElementById('routeMessage')?.textContent||'';if(navigator.clipboard) navigator.clipboard.writeText('SJC Campus Navigator — '+s+'\n'+m);});
+});
+</script></body></html>

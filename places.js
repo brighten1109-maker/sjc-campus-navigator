@@ -1,0 +1,6 @@
+document.addEventListener('DOMContentLoaded',()=>{
+ const grid=document.getElementById('placesGrid'),search=document.getElementById('placeSearch'),filter=document.getElementById('placeFilter'),places=window.SJC.places;
+ [...new Set(places.map(p=>p.category))].sort().forEach(c=>filter.insertAdjacentHTML('beforeend','<option value="'+c+'">'+c+'</option>'));
+ function render(){const q=search.value.trim().toLowerCase(),f=filter.value,rows=places.filter(p=>(!q||(p.title+' '+p.category+' '+p.description).toLowerCase().includes(q))&&(!f||p.category===f));grid.innerHTML=rows.length?rows.map(p=>'<article class="directory-card"><div class="card-top"><span class="card-number">'+p.number+'</span><div class="card-icon">'+p.icon+'</div></div><span class="card-category">'+p.category+'</span><h3>'+p.title+'</h3><p>'+p.description+'</p><div class="card-actions"><a class="primary" href="navigator.html?to='+p.id+'">Navigate here →</a></div></article>').join(''):'<div class="no-results">No campus destination matched your search.</div>';}
+ search.addEventListener('input',render);filter.addEventListener('change',render);render();
+});
